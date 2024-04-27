@@ -53,9 +53,15 @@ fun DrawerHeader() {
 }
 
 @Composable
-fun DrawerBody(onLogout: () -> Unit) {
+fun DrawerBody(onRate: () -> Unit,onLogout: () -> Unit) {
     Column {
 
+        DrawerMenuItem(
+            text = "Reviews and Ratings",
+            onItemClick = {
+                onRate()
+            }
+        )
         DrawerMenuItem(
             text = "Logout",
             onItemClick = {

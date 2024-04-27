@@ -78,7 +78,7 @@ fun BookScreen(navController: NavController) {
                 SmallTopAppBar(
                     title = {
                         Text(
-                            text = "Table Book", color = Color.White,
+                            text = "Submit Booking", color = Color.White,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(10.dp),
@@ -252,13 +252,15 @@ fun BookScreen(navController: NavController) {
                         modifier = Modifier
                     ) {
                         RoundedButton(
-                            text = "Submit rating",
+                            text = "Submit Booking",
                             textColor = white,
                             onClick = {
                                 if(name.isEmpty()) {
                                     Toast.makeText(context, "Please enter name.", Toast.LENGTH_SHORT).show()
                                 } else if(mobile.isEmpty()) {
                                     Toast.makeText(context, "Please enter mobile.", Toast.LENGTH_SHORT).show()
+                                }  else if(mobile.length<10) {
+                                    Toast.makeText(context, "Please enter valid mobile.", Toast.LENGTH_SHORT).show()
                                 } else if(selectedDate.isEmpty()) {
                                     Toast.makeText(context, "Please select date.", Toast.LENGTH_SHORT).show()
                                 } else if(selectedDate.isEmpty()) {

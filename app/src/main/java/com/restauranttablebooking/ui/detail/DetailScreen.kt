@@ -32,7 +32,7 @@ import com.restauranttablebooking.utils.RoundedButton
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun DetailScreen(navController: NavController) {
+fun DetailScreen(navController: NavController, name:String,image:Int,address:String,detail:String) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
     RestaurantTableBookingAppTheme {
@@ -83,7 +83,7 @@ fun DetailScreen(navController: NavController) {
                         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_restro_table),
+                            painter = painterResource(id = image),
                             contentDescription = "Image",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -92,14 +92,20 @@ fun DetailScreen(navController: NavController) {
                         )
                     }
                     Text(
-                        "Test Restaurant",
+                        name,
                         fontSize = 14.sp,
                         color = Color.Black,
                         modifier = Modifier
                             .padding(vertical = 5.dp, horizontal = 10.dp)
                     )
 
-
+                    Text(
+                        address,
+                        fontSize = 14.sp,
+                        color = Color.Black,
+                        modifier = Modifier
+                            .padding(vertical = 5.dp, horizontal = 10.dp)
+                    )
                     Text(
                         "detail",
                         fontSize = 14.sp,
@@ -108,7 +114,7 @@ fun DetailScreen(navController: NavController) {
                             .padding(vertical = 5.dp, horizontal = 10.dp)
                     )
                     Text(
-                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+                        detail,
                         fontSize = 14.sp,
                         color = Color.Black,
                         modifier = Modifier
@@ -118,7 +124,7 @@ fun DetailScreen(navController: NavController) {
                         modifier = Modifier
                     ) {
                         RoundedButton(
-                            text = "Book",
+                            text = "Click here to book",
                             textColor = white,
                             onClick = {
                                 navController.navigate(Screen.BookScreen.route)

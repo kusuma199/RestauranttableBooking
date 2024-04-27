@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,7 +20,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.restauranttablebooking.R
@@ -40,9 +44,10 @@ fun LoginScreen(navController: NavController) {
     val preference = remember {
         RestaurantPreference(context)
     }
+    var isUser by remember { mutableStateOf(false) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    val db = Firebase.firestore
+    val firebaseAuth = FirebaseAuth.getInstance()
     RestaurantTableBookingAppTheme {
         Scaffold {
             Column(
@@ -116,61 +121,32 @@ fun LoginScreen(navController: NavController) {
                             textColor = white,
                             onClick = {
                                 if (email.isNotEmpty()) {
-                                    if (!isValidEmail(email.trim())) {
+                                    if (!isValidEmail(email.toString())) {
                                         if (password.isNotEmpty()) {
-                                            db.collection("users")
-                                                .get()
-                                                .addOnSuccessListener { result ->
-                                                    if (result.isEmpty) {
+                                            isUser = true
+                                            firebaseAuth.signInWithEmailAndPassword(email.lowercase(), password)
+                                                .addOnCompleteListener { task ->
+                                                    if (task.isSuccessful) {
+                                                        preference.saveData(
+                                                            "isLogin", true
+                                                        )
                                                         Toast.makeText(
-                                                            context,
-                                                            "Invalid user.",
-                                                            Toast.LENGTH_LONG
+                                                            context, "Login successfully.", Toast.LENGTH_SHORT
                                                         ).show()
-                                                        return@addOnSuccessListener
-                                                    } else {
-                                                        for (document in result) {
-                                                            Log.e(
-                                                                "TAG",
-                                                                "setOnClick: $document"
-                                                            )
-                                                            if (document.data["email"] == email &&
-                                                                document.data["password"] == password
-                                                            ) {
-                                                                preference.saveData(
-                                                                    "isLogin",
-                                                                    true
-                                                                )
-                                                                Toast.makeText(
-                                                                    context,
-                                                                    "Login successfully.",
-                                                                    Toast.LENGTH_LONG
-                                                                ).show()
-                                                                navController.navigate(
-                                                                    Screen.MainScreen.route
-                                                                ) {
-                                                                    popUpTo(Screen.LoginScreen.route) {
-                                                                        inclusive = true
-                                                                    }
-                                                                }
-                                                            } else {
-                                                                Toast.makeText(
-                                                                    context,
-                                                                    "Invalid user.",
-                                                                    Toast.LENGTH_LONG
-                                                                ).show()
-                                                                return@addOnSuccessListener
+                                                        navController.navigate(
+                                                            Screen.MainScreen.route
+                                                        ) {
+                                                            popUpTo(Screen.LoginScreen.route) {
+                                                                inclusive = true
                                                             }
                                                         }
+                                                        isUser = false
+                                                    } else {
+                                                        Toast.makeText(
+                                                            context, task.exception?.message.toString(), Toast.LENGTH_SHORT
+                                                        ).show()
+                                                        isUser = false
                                                     }
-
-                                                }
-                                                .addOnFailureListener { exception ->
-                                                    Toast.makeText(
-                                                        context,
-                                                        exception.message.toString(),
-                                                        Toast.LENGTH_LONG
-                                                    ).show()
                                                 }
                                         } else {
                                             Toast.makeText(
@@ -194,7 +170,6 @@ fun LoginScreen(navController: NavController) {
                                         "Please enter email.",
                                         Toast.LENGTH_LONG
                                     ).show()
-
                                 }
                             }
                         )
@@ -230,7 +205,21 @@ fun LoginScreen(navController: NavController) {
                 }
                 Spacer(modifier = Modifier.height(10.dp))
             }
-
+            if (isUser) {
+                Dialog(
+                    onDismissRequest = { },
+                    DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(100.dp)
+                            .background(white, shape = RoundedCornerShape(8.dp))
+                    ) {
+                        CircularProgressIndicator(color = black)
+                    }
+                }
+            }
 
         }
     }

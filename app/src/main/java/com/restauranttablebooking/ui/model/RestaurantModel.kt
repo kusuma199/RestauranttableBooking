@@ -1,3 +1,3 @@
 package com.restauranttablebooking.ui.model
 
-class RestaurantModel(var id:String="", var image:String="", var name:String="", var detail:String="")
+class RestaurantModel(var id:String="", var image:Int=0, var name:String="", var address:String="", var detail:String="")
